@@ -4,11 +4,10 @@ import shutil
 import unittest
 
 from pydd import pydd
-from pydd.pydd import set_logger_mode, parse_args
+from pydd.pydd import parse_args, set_logger_mode
 
 
 class TestPydd(unittest.TestCase):
-
     def setUp(self):
         self.src = "init_test_dir"
         self.dst = "final_test_dir"
@@ -25,7 +24,7 @@ class TestPydd(unittest.TestCase):
     def generate_fake_text_files(self, num_files: int):
         extension = "txt"
         for i in range(num_files):
-            f = open(os.path.join(self.src, f"file{i}.{extension}"), 'w')
+            f = open(os.path.join(self.src, f"file{i}.{extension}"), "w")
             f.write(f"file {i} contents")
             f.close()
 
@@ -41,8 +40,12 @@ class TestPydd(unittest.TestCase):
         num_files = 10
         self.generate_fake_text_files(num_files)
         self.assertEqual(self.get_num_files_in_dir(self.src), num_files)
-        pydd(src_dir=self.src, dst_dir=self.dst, regex=self.regex,
-             disable_progressbar=False)
+        pydd(
+            src_dir=self.src,
+            dst_dir=self.dst,
+            regex=self.regex,
+            disable_progressbar=False,
+        )
         self.assertEqual(self.get_num_files_in_dir(self.dst), num_files)
         self.assertEqual(self.get_num_files_in_dir(self.src), 0)
 
@@ -52,9 +55,11 @@ class TestPydd(unittest.TestCase):
 
     def test_parse_args(self):
         parser = parse_args(
-            ['-q', '--src', self.src, '--dst', self.dst, "--regex", self.regex])
+            ["--src", self.src, "--dst", self.dst, "--regex", self.regex]
+        )
         self.assertEqual(parser.src, self.src)
+        self.assertEqual(parser.quiet, False)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

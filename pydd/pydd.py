@@ -21,8 +21,6 @@ from typing import List, Optional
 
 import tqdm
 
-logging.basicConfig(format="%(levelname)s: %(message)s", level=logging.INFO)
-
 DD_COMMAND = "/bin/dd if={src} of={dst} bs=1024k >& /dev/null"
 RM_COMMAND = "/bin/rm {src}"
 
@@ -40,8 +38,9 @@ def set_logger_mode(quiet_mode: bool) -> None:
         logging.basicConfig(format="%(levelname)s: %(message)s", level=logging.INFO)
 
 
-def pydd(src_dir: str, regex: str, dst_dir: str,
-         disable_progressbar: Optional[bool] = False) -> None:
+def pydd(
+    src_dir: str, regex: str, dst_dir: str, disable_progressbar: Optional[bool] = False
+) -> None:
     """Find the files and executes the dd and rm on them.
 
     :param src_dir: str
@@ -58,8 +57,9 @@ def pydd(src_dir: str, regex: str, dst_dir: str,
     search_str = os.path.join(src_dir, regex)
     files = glob.glob(search_str)
     if len(files) == 0:
-        logging.error(f"No files found \N{worried face}."
-                      f" Search param: {search_str}")
+        logging.error(
+            f"No files found \N{worried face}." f" Search param: {search_str}"
+        )
         return
 
     logging.info(f"Moving {len(files)} files from {src_dir}-->{dst_dir}")
@@ -83,21 +83,28 @@ def parse_args(args: List[str]) -> argparse.Namespace:
     :return: Namespace
         The parsed user args
     """
-    parser = argparse.ArgumentParser(description='Fast move of files')
-    parser.add_argument('--src', type=str, help='src dir to move files from',
-                        required=True)
-    parser.add_argument('--dst', type=str, help='dst dir to move files to',
-                        required=True)
-    parser.add_argument('--regex', type=str, help="glob regex for file (eg *.txt)",
-                        required=True)
-    parser.add_argument('-q', '--quiet', action="store_false",
-                        help="decrease output verbosity",
-                        )
+    parser = argparse.ArgumentParser(description="Fast move of files")
+    parser.add_argument(
+        "--src", type=str, help="src dir to move files from", required=True
+    )
+    parser.add_argument(
+        "--dst", type=str, help="dst dir to move files to", required=True
+    )
+    parser.add_argument(
+        "--regex", type=str, help="glob regex for file (eg *.txt)", required=True
+    )
+    parser.add_argument(
+        "-q", "--quiet", action="store_true", help="decrease output verbosity",
+    )
     return parser.parse_args(args)
 
 
 def main():
     args = parse_args(sys.argv[1:])
     set_logger_mode(quiet_mode=args.quiet)
-    pydd(src_dir=args.src, dst_dir=args.dst, regex=args.regex,
-         disable_progressbar=args.quiet)
+    pydd(
+        src_dir=args.src,
+        dst_dir=args.dst,
+        regex=args.regex,
+        disable_progressbar=args.quiet,
+    )
