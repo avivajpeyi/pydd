@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 
 setup(
-    name="pydd",
+    name="pydmove",
     version="1.0",
     description="mv (using dd followed by rm) with a progressbar",
     long_description=long_description,
