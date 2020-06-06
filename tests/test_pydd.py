@@ -4,6 +4,7 @@ import shutil
 import unittest
 
 from pydd import pydd
+from pydd.dd import Method
 from pydd.pydd import parse_args, set_logger_mode
 
 
@@ -14,6 +15,7 @@ class TestPydd(unittest.TestCase):
         os.makedirs(self.src, exist_ok=True)
         os.makedirs(self.dst, exist_ok=True)
         self.regex = "*.txt"
+        self.num_files = 1000
 
     def tearDown(self):
         if os.path.exists(self.src):
@@ -27,6 +29,7 @@ class TestPydd(unittest.TestCase):
             f = open(os.path.join(self.src, f"file{i}.{extension}"), "w")
             f.write(f"file {i} contents")
             f.close()
+        pass
 
     def get_num_files_in_dir(self, dir: str):
         filenames = glob.glob(os.path.join(dir, self.regex))
@@ -35,9 +38,9 @@ class TestPydd(unittest.TestCase):
     def test_nothing_found(self):
         pydd(src_dir=self.src, dst_dir=self.dst, regex=self.regex)
 
-    def test_pydd(self):
+    def test_pydd_subprocess(self):
         set_logger_mode(quiet_mode=False)
-        num_files = 10
+        num_files = self.num_files
         self.generate_fake_text_files(num_files)
         self.assertEqual(self.get_num_files_in_dir(self.src), num_files)
         pydd(
@@ -45,6 +48,22 @@ class TestPydd(unittest.TestCase):
             dst_dir=self.dst,
             regex=self.regex,
             disable_progressbar=False,
+            method=Method.SUBPROCESS,
+        )
+        self.assertEqual(self.get_num_files_in_dir(self.dst), num_files)
+        self.assertEqual(self.get_num_files_in_dir(self.src), 0)
+
+    def test_pydd_bash(self):
+        set_logger_mode(quiet_mode=False)
+        num_files = self.num_files
+        self.generate_fake_text_files(num_files)
+        self.assertEqual(self.get_num_files_in_dir(self.src), num_files)
+        pydd(
+            src_dir=self.src,
+            dst_dir=self.dst,
+            regex=self.regex,
+            disable_progressbar=False,
+            method=Method.BASH,
         )
         self.assertEqual(self.get_num_files_in_dir(self.dst), num_files)
         self.assertEqual(self.get_num_files_in_dir(self.src), 0)
