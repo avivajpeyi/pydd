@@ -2,6 +2,7 @@ import glob
 import logging
 import os
 import subprocess
+import uuid
 from enum import Enum
 from typing import Optional
 
@@ -100,7 +101,8 @@ def get_commands(files, src_dir, dst_dir, echo_progress=False):
 
 
 def call_dd_in_bashfile(files, disable_progressbar, src_dir, dst_dir):
-    bash_file_name = "fast_dd_mover.sh"
+    unique_filename = str(uuid.uuid4())
+    bash_file_name = f".fast_dd_mover_{unique_filename}.sh"
     commands = get_commands(
         files, src_dir, dst_dir, echo_progress=not disable_progressbar
     )

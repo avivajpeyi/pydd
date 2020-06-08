@@ -6,7 +6,7 @@ with open("README.md", "r") as fh:
 
 setup(
     name="pydmove",
-    version="1.0",
+    version="1.1",
     description="mv (using dd followed by rm) with a progressbar",
     long_description=long_description,
     long_description_content_type="text/markdown",
